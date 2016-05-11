@@ -51,6 +51,7 @@ public class Account {
         delay();
         synchronized (this) {
             if (!readers.contains(Thread.currentThread())) {
+                System.out.println(this+" "+value+ " " +readers);
                 throw new TransactionUsageError();
             }
             if (value != expectedValue) {
@@ -88,11 +89,13 @@ public class Account {
                         || (numReaders == 1 && !readers.contains(self))) {
                     // encountered conflict with another transaction;
                     // will have to retry
+                    
                     throw new TransactionAbortException();
                 }
                 writer = self;
             } else {
                 if (readers.contains(self) || (writer == self)) {
+                    
                     throw new TransactionUsageError();
                 }
                 if (writer != null) {
@@ -100,7 +103,9 @@ public class Account {
                     // will have to retry
                     throw new TransactionAbortException();
                 }
+                System.out.println(this+ " " +value + " READERS: "+readers.size());
                 readers.add(Thread.currentThread());
+                System.out.println(this+ " " +value + " READERS: "+readers.size());
             }
         }
     }
